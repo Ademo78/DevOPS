@@ -3,28 +3,70 @@ name: CI devops 2025
 on:
   # Lancement du job lors d'un push sur main et develop
   push:
-    branches:
+    branches: 
       - main
       - develop
-
-  # Lancement lors d'une pull request vers n'importe quelle branche
+  # Lancement lors d'une pull request
   pull_request:
 
 jobs:
-  test-backend:
+  # Job 1 : Test du backend et analyse de qualité SonarCloud
+  test-backend: 
     runs-on: ubuntu-24.04
-
     steps:
-      # Récupération du code source
+      # 1. Récupération du code source
       - uses: actions/checkout@v4
 
-      # Configuration du JDK 21
+      # 2. Configuration du JDK 21 (Temurin)
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin' # Distribution recommandée (Eclipse Temurin)
+          distribution: 'temurin'
 
-      # Build et exécution des tests avec Maven
-      - name: Build and test with Maven
-        run: mvn clean verify -f simple-api/pom.xml
+      # 3. Build, Tests et Analyse SonarCloud
+      - name: Build and test with Maven and SonarCloud
+        run: |
+          mvn -B verify sonar:sonar \
+            -Dsonar.projectKey=Ademo78_DevOPS \
+            -Dsonar.organization=ademo78 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -f simple-api/pom.xml
+
+  # Job 2 : Build et Push des images Docker
+  build-and-push-docker-image:
+    needs: test-backend 
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build image and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./simple-api
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+          push: true
+
+      - name: Build image and push database
+        uses: docker/build-push-action@v6
+        with:
+          context: ./database
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
+          push: true
+
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v6
+        with:
+          context: ./http-server
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+          push: true
