@@ -28,7 +28,7 @@ jobs:
       - name: Build and test with Maven and SonarCloud
         run: |
           mvn -B verify sonar:sonar \
-            -Dsonar.projectKey=Ademo78_DevOPS \
+            -Dsonar.projectKey=Ademo78 \
             -Dsonar.organization=ademo78 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
