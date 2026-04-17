@@ -1,21 +1,29 @@
 name: CI devops 2025
 on:
-  #to begin you want to launch this job in main and develop
+  # Lancement du job lors d'un push sur main et develop
   push:
-    branches: #TODO 
+    branches: 
+      - main
+      - develop
+  # Lancement lors d'une pull request vers n'importe quelle branche
   pull_request:
 
 jobs:
   test-backend: 
     runs-on: ubuntu-24.04
     steps:
-     #checkout your github code using actions/checkout@v4
+      # Récupération du code source
       - uses: actions/checkout@v4
 
-     #do the same with another action (actions/setup-java@v4) that enable to setup jdk 21
+      # Configuration du JDK 21
       - name: Set up JDK 21
-        #TODO
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin' # Distribution recommandée (Eclipse Temurin)
 
-     #finally build your app with the latest command
+      # Build et exécution des tests avec Maven
       - name: Build and test with Maven
-        run: #TODO
+        # On utilise le répertoire où se trouve le pom.xml (souvent simple-api)
+        # Si le pom.xml est à la racine, retire la partie "-f simple-api/pom.xml"
+        run: mvn clean verify
