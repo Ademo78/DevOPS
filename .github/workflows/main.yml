@@ -5,11 +5,11 @@ on:
     branches: 
       - main
       - develop
-  # Lancement lors d'une pull request
+  # Lancement lors d'une pull request vers n'importe quelle branche
   pull_request:
 
 jobs:
-  # Job 1 : Test du backend et analyse de qualité
+  # Job 1 : Test du backend et analyse de qualité SonarCloud
   test-backend: 
     runs-on: ubuntu-24.04
     steps:
@@ -24,7 +24,6 @@ jobs:
           distribution: 'temurin'
 
       # Build, exécution des tests et analyse SonarCloud
-      # Note : On utilise verify pour générer les rapports de test pour Sonar
       - name: Build and test with Maven
         run: |
           mvn -B verify sonar:sonar \
@@ -53,7 +52,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Build et Push du Backend
+      # Build et Push du Backend (API)
       - name: Build image and push backend
         uses: docker/build-push-action@v6
         with:
@@ -61,7 +60,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
           push: true
 
-      # Build et Push de la Database
+      # Build et Push de la Database (Postgres)
       - name: Build image and push database
         uses: docker/build-push-action@v6
         with:
@@ -69,7 +68,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
           push: true
 
-      # Build et Push du serveur HTTP (httpd)
+      # Build et Push du serveur HTTP (Apache/HTTPD)
       - name: Build image and push httpd
         uses: docker/build-push-action@v6
         with:
