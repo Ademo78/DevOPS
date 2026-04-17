@@ -28,7 +28,7 @@ jobs:
         run: |
           mvn -B verify sonar:sonar \
             -Dsonar.projectKey=Ademo78_DevOPS \
-            -Dsonar.organization=ademo78 \
+            -Dsonar.organization=ademo-devops \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -f simple-api/pom.xml
