@@ -23,7 +23,7 @@ jobs:
           distribution: 'temurin' # Distribution recommandée (Eclipse Temurin)
 
       # Build et exécution des tests avec Maven
+      # Build et exécution des tests avec Maven
       - name: Build and test with Maven
-        # On utilise le répertoire où se trouve le pom.xml (souvent simple-api)
-        # Si le pom.xml est à la racine, retire la partie "-f simple-api/pom.xml"
-        run: mvn clean verify
+        # L'option -f (ou --file) permet de pointer vers le bon pom.xml
+        run: mvn clean verify -f simple-api/pom.xml
