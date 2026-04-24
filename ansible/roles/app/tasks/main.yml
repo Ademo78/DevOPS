@@ -1,0 +1,10 @@
+- name: Run App
+  docker_container:
+    name: simple-api
+    image: ademo78711/my-backend:1.0
+    networks:
+      - name: app-network
+    state: started
+    restart_policy: always
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python
