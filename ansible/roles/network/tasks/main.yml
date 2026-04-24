@@ -1,0 +1,3 @@
+- name: Placeholder for network role
+  debug:
+    msg: "Network role is working"
